@@ -1,6 +1,6 @@
 ---
 applications:
-- name: pal-tracker
+- name: pal-tracker-review
   path: src/PalTracker/bin/Release/netcoreapp2.1/publish/
   routes:
   - route: pal-tracker-cheerful-platypus-review.cfapps.io
