@@ -47,12 +47,23 @@ jobs:
             tar -xvzf artifacts/pal-tracker-$CIRCLE_SHA1.tgz -C $EXTRACT_DEST
 
       - run:
+          name: Install jq
+          command: |
+            apt-get -y install jq
+
+      - run:
+          name: Install flyway
+          command: |
+            curl https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/5.1.1/flyway-commandline-5.1.1-linux-x64.tar.gz | tar xvz
+
+      - run:
           name: Deploy
           command: |
             cd $EXTRACT_DEST
 
             cf login -a $CF_API -u "$CF_USERNAME" -p "$CF_PASSWORD" -o "$CF_ORG" -s "$CF_SPACE_REVIEW"
             cf push -f manifest-$ENVIRONMENT.yml
+            bash ./migrate-databases.sh pal-tracker-review . /root/project 
 
   deployToProd:
     docker:
@@ -81,12 +92,23 @@ jobs:
             tar -xvzf artifacts/pal-tracker-$CIRCLE_SHA1.tgz -C $EXTRACT_DEST
 
       - run:
+          name: Install jq
+          command: |
+            apt-get -y install jq
+
+      - run:
+          name: Install flyway
+          command: |
+            curl https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/5.1.1/flyway-commandline-5.1.1-linux-x64.tar.gz | tar xvz
+      
+      - run:
           name: Deploy
           command: |
             cd $EXTRACT_DEST
 
             cf login -a $CF_API -u "$CF_USERNAME" -p "$CF_PASSWORD" -o "$CF_ORG" -s "$CF_SPACE_PROD"
             cf push -f manifest-$ENVIRONMENT.yml
+            bash ./migrate-databases.sh pal-tracker-prod . /root/project
 
 workflows:
   version: 2
